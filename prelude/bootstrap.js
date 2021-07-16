@@ -307,6 +307,12 @@ function findNativeAddonSyncUnderRequire(path_) {
   return findNativeAddonSyncFreeFromRequire(path_);
 }
 
+const prefixRegex = /^\\\\\?[\\]+|\/\*\*/
+
+function revertMakingLong(f) {
+  return f.replace(prefixRegex, '');
+}
+
 // /////////////////////////////////////////////////////////////////
 // FLOW UTILS //////////////////////////////////////////////////////
 // /////////////////////////////////////////////////////////////////
@@ -1562,11 +1568,6 @@ function payloadFileSync(pointer) {
     return path._makeLong(f);
   }
 
-  function revertMakingLong(f) {
-    if (/^\\\\\?\\/.test(f)) return f.slice(4);
-    return f;
-  }
-
   function findNativeAddonForInternalModuleStat(path_) {
     const fNative = findNativeAddonSyncUnderRequire(path_);
     if (!fNative) return -ENOENT;
@@ -2009,11 +2010,6 @@ function payloadFileSync(pointer) {
   const ancestor = {
     dlopen: process.dlopen,
   };
-
-  function revertMakingLong(f) {
-    if (/^\\\\\?\\/.test(f)) return f.slice(4);
-    return f;
-  }
 
   process.dlopen = function dlopen() {
     const args = cloneArgs(arguments);
